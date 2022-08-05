@@ -3,17 +3,15 @@
 #
 # Description: Modified version of official "nuke" plugins. Added a function to choose other custom apps to play files by file type or meme instead of default.
 # Rename to "nuke_select"
-# Not well tested, may have bug
-# Only tested with bash, may not compatible with other shell
-# May need to manually change the shebang to bash in the first line of the script
 #
 # Modified by amalgame21
 # Inspired by ranger's rifle.conf. 
 #
-# Usage 1: nuke_select filepath  (as official nuke plugin)
+# Usage 1: nuke_select -s filepath  (standalone use -s flag)
 # Usage 2: export NNN_OPENER=/absolute/path/to/nuke_select (as official nuke plugin)
 # Usage 3: export NNN_PLUG="r:!/absolute/path/to/nuke_select -S*" ("command as plugin" to select application instead of open with default, with the -S flag)
-# 
+# Only tested with bash, may not compatible with other shell
+# May need to manually change the shebang to bash in the first line of the script
 #
 # 
 # ######## official nuke comment below #######
@@ -81,11 +79,12 @@
 # set to 1 to enable GUI apps and/or BIN execution
 GUI="${GUI:-1}"
 BIN="${BIN:-0}"
+STANDALONE=0
 
 # Usage: NNN_PLUG="r:!~/.config/nnn/plugins/nuke_select -S*"
-while getopts 'Sh' OPTION; do
+while getopts 'Ssh' OPTION; do
   case "$OPTION" in
-    # Select mode is ON by calling nuke with -S flag (SELECT=1)
+    # "Command as plugin" : Select mode is ON by calling nuke with -S flag (SELECT=1)
     S)
       SELECT=1
       # "command as plugin" require $nnn instead of $1 to work
@@ -93,11 +92,19 @@ while getopts 'Sh' OPTION; do
       FPATH="$nnn"
       FNAME=$(basename "$nnn")
       ;;
+    # "Standalone" : Select mode is ON by calling nuke with -S flag (SELECT=1)
+    s)
+      SELECT=1
+      # "command as plugin" require $nnn instead of $1 to work
+      IMAGE_CACHE_PATH="$(dirname "$2")"/.thumbs
+      FPATH="$2"
+      FNAME=$(basename "$2")
+      STANDALONE=1
+      ;;
     h)
-      echo 'Usage 1: nuke_select filepath (as official nuke plugin)'
+      echo 'Usage 1: nuke_select -s filepath (standalone use -s flag)'
       echo 'Usage 2: export NNN_OPENER=/absolute/path/to/nuke_select (as official nuke plugin)'
       echo 'Usage 3: export NNN_PLUG="r:!/absolute/path/to/nuke_select -S*" ("command as plugin" to select application instead of open with default, with the -S flag)'
-      echo 'Not well tested, may have bug'
       echo 'Only tested with bash, may not compatible with other shell'
       echo 'May need to manually change the shebang to bash in the first line of the script'
       exit 0
@@ -131,35 +138,39 @@ fi
 ## The order here affect the order of the list
 ## This array format is not compatible with ksh
 #PDF
-APP_PDF=("zathura" "okular" "pdftotext" "mutool" "exiftool")
+APP_PDF=("zathura" "okular" "pdftotext" "mutool" "exiftool" "termux-open" "termux-share")
 #VIDEO (avi|mkv|mp4) (mime)
-APP_VIDEO=("mpv" "vlc" "smplayer" "ffmpegthumbnailer" "mediainfo" "exiftool")
+APP_VIDEO=("mpv" "vlc" "smplayer" "ffmpegthumbnailer" "mediainfo" "exiftool" "termux-open" "termux-share")
 #SUBTITLES (ass|ssa|srt)
-APP_SUBTITLE=("aegisub-3.2" "nvim" "vim" "vi")
+APP_SUBTITLE=("aegisub-3.2" "nvim" "vim" "vi" "termux-open" "termux-share")
 #TXT (txt)
-APP_TXT=("nvim" "vim" "vi" "nano" "gvim" "kate")
+APP_TXT=("nvim" "vim" "vi" "nano" "gvim" "kate" "termux-open" "termux-share")
 #AUDIO (aac|flac|m4a|mid|midi|mpa|mp2|mp3|ogg|wav|wma) (mime)
-APP_AUDIO=("mocq" "mpv" "media_client" "mediainfo" "exiftool" "rhythmbox" "vlc")
+APP_AUDIO=("mocq" "mpv" "media_client" "mediainfo" "exiftool" "rhythmbox" "vlc" "termux-open" "termux-share")
 #ARCHIVE extension (a|ace|alz|arc|arj|bz|bz2|cab|cpio|deb|gz|jar|lha|lz|lzh|lzma|lzo|rpm|rz|t7z|tar|tbz|tbz2|tgz|tlz|txz|tZ|tzo|war|xpi|xz|Z|zip)
-APP_ARCHIVE=("atool" "bsdtar")
+APP_ARCHIVE=("atool" "bsdtar" "termux-open" "termux-share")
 #TORRENT (torrent)
-APP_TORRENT=("rtorrent" "transmission-show")
+APP_TORRENT=("rtorrent" "transmission-show" "termux-open" "termux-share")
 #Image (mime)
-APP_IMAGE=("vimiv" "imv" "imvr" "sxiv" "nsxiv" "gthumb" "gimp" "ristretto" "feh" "viu" "img2txt" "exiftool")
+APP_IMAGE=("vimiv" "imv" "imvr" "sxiv" "nsxiv" "gthumb" "gimp" "ristretto" "feh" "viu" "img2txt" "exiftool" "termux-open" "termux-share")
 #Open Document (odt|ods|odp|sxw)
-APP_OPENDOCUMENT=("libreoffice" "odt2txt")
+APP_OPENDOCUMENT=("libreoffice" "odt2txt" "termux-open" "termux-share")
 #Markdown (md)
-APP_MARKDOWN=("glow" "lowdown" "nvim" "vim" "vi" "nano")
+APP_MARKDOWN=("glow" "lowdown" "nvim" "vim" "vi" "nano" "termux-open" "termux-share")
 #html (htm|html|xhtml)
-APP_HTML=("firefox" "librewolf" 'tor-browser' "qutebrowser" "palemoon" "chromium" "surf" "chrome" "w3m" "lynx" "elinks")
+APP_HTML=("firefox" "librewolf" 'tor-browser' "qutebrowser" "palemoon" "chromium" "surf" "chrome" "w3m" "lynx" "elinks" "termux-open" "termux-share")
 #Json (json)
-APP_JSON=("jq" "python" "nvim" "vim" "vi" "nano")
+APP_JSON=("jq" "python" "nvim" "vim" "vi" "nano" "termux-open" "termux-share")
 
 
 #This function is called by handle_***_select() to list available apps and return application name to the function
 list_app_and_return_name(){
 echo
-echo "Opening file [$nnn]"
+if [ $STANDALONE -eq 1 ]; then
+  echo "Opening file [$2]"
+else
+  echo "Opening file [$nnn]"
+fi
 APP=("$@")
 # display a list of available (installed) applicaiton for APP with number
 for i in ${!APP[@]}; do
