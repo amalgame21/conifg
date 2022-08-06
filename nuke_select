@@ -1,17 +1,16 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 #
 #
 # Description: Modified version of official "nuke" plugins. Added a function to choose other custom apps to play files by file type or meme instead of default.
 # Rename to "nuke_select"
 #
+# Shell: Bash
 # Modified by amalgame21
 # Inspired by ranger's rifle.conf. 
 #
-# Usage 1: nuke_select -s filepath  (standalone use -s flag)
+# Usage 1: nuke_select -s filepath  (standaline use -s flag)
 # Usage 2: export NNN_OPENER=/absolute/path/to/nuke_select (as official nuke plugin)
 # Usage 3: export NNN_PLUG="r:!/absolute/path/to/nuke_select -S*" ("command as plugin" to select application instead of open with default, with the -S flag)
-# Only tested with bash, may not compatible with other shell
-# May need to manually change the shebang to bash in the first line of the script
 #
 # 
 # ######## official nuke comment below #######
@@ -105,8 +104,6 @@ while getopts 'Ssh' OPTION; do
       echo 'Usage 1: nuke_select -s filepath (standalone use -s flag)'
       echo 'Usage 2: export NNN_OPENER=/absolute/path/to/nuke_select (as official nuke plugin)'
       echo 'Usage 3: export NNN_PLUG="r:!/absolute/path/to/nuke_select -S*" ("command as plugin" to select application instead of open with default, with the -S flag)'
-      echo 'Only tested with bash, may not compatible with other shell'
-      echo 'May need to manually change the shebang to bash in the first line of the script'
       exit 0
     ;;
   esac
@@ -626,7 +623,7 @@ handle_extension() {
           fi
             exit 1;;
 
-        ## Subtitles
+        ## txt
         txt)
           if [ "$SELECT" -ne 0 ]; then
             handle_txt_select
