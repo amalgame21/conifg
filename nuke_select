@@ -178,8 +178,9 @@ for i in ${!APP[@]}; do
   fi
 done
 
+
 # read the input
-printf ":open_with "
+printf "\nOr input any application name you want.\nOpen with: "
 read -r input
 echo
 
