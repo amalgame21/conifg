@@ -158,6 +158,8 @@ APP_MARKDOWN=("glow" "lowdown" "nvim" "vim" "vi" "nano" "termux-open" "termux-sh
 APP_HTML=("firefox" "librewolf" 'tor-browser' "qutebrowser" "palemoon" "chromium" "surf" "chrome" "w3m" "lynx" "elinks" "termux-open" "termux-share")
 #Json (json)
 APP_JSON=("jq" "python" "nvim" "vim" "vi" "nano" "termux-open" "termux-share")
+#Directory
+APP_DIRECTORY=("pcmanfm-qt" "pcmanfm" "thunar" "dophin" "nemo" "nautilus" "krusader" "touch")
 
 
 #This function is called by handle_***_select() to list available apps and return application name to the function
@@ -554,6 +556,24 @@ fi
 exit 0
 }
 
+handle_directory_select(){
+list_app_and_return_name "${APP_DIRECTORY[@]}"
+
+# check again if the application is installed (for name input)
+if type "$input" >/dev/null 2>&1; then
+    if [ "$input" == "pcmanfm-qt" ] || [ "$input" == "pcmanfm" ] || [ "$input" == "thunar" ] || [ "$input" == "dophin" ] || [ "$input" == "nemo" ] || [ "$input" == "nautilus" ] || [ "$input" == "krusader" ]; then
+        nohup "$input" "${FPATH}" >/dev/null 2>&1 &
+    # others if exist
+    else "$input" "${FPATH}"
+    fi
+# corresponding application is not installed 
+else
+   echo "Invalid input. Press Enter to continue..."
+   read -r 
+   return
+fi
+exit 0
+}
 
 # handle this extension and exit
 handle_extension() {
@@ -969,6 +989,9 @@ handle_mime() {
 }
 
 handle_fallback() {
+   if [ "$SELECT" -ne 0 ]; then
+     handle_directory_select
+   else
     if [ "$GUI" -ne 0 ]; then
         if type xdg-open >/dev/null 2>&1; then
             nohup xdg-open "${FPATH}" >/dev/null 2>&1 &
@@ -978,6 +1001,7 @@ handle_fallback() {
             exit 0
         fi
     fi
+  fi
 
     echo '----- File details -----' && file --dereference --brief -- "${FPATH}"
     exit 1
