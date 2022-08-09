@@ -125,7 +125,11 @@ IFS="$(printf '%b_' '\n')"; IFS="${IFS%_}" # protect trailing \n
 
 PATH=$PATH:"${XDG_CONFIG_HOME:-$HOME/.config}/nnn/plugins"
 EDITOR="${VISUAL:-${EDITOR:-vi}}"
-PAGER="${PAGER:-less -R}"
+if type bat >/dev/null 2>&1; then
+    PAGER="${PAGER:-bat --pager 'less -R'}"
+else
+    PAGER="${PAGER:-less -R}"
+fi
 ext="${FNAME##*.}"
 if [ -n "$ext" ]; then
     ext="$(printf "%s" "${ext}" | tr '[:upper:]' '[:lower:]')"
@@ -159,11 +163,12 @@ APP_HTML=("firefox" "librewolf" 'tor-browser' "qutebrowser" "palemoon" "chromium
 #Json (json)
 APP_JSON=("jq" "python" "nvim" "vim" "vi" "nano" "termux-open" "termux-share")
 #Directory
-APP_DIRECTORY=("pcmanfm-qt" "pcmanfm" "thunar" "dophin" "nemo" "nautilus" "krusader" "touch")
+APP_DIRECTORY=("pcmanfm-qt" "pcmanfm" "thunar" "dophin" "nemo" "nautilus" "krusader" "touch" "rmdir")
 
 
 #This function is called by handle_***_select() to list available apps and return application name to the function
 list_app_and_return_name(){
+clear
 echo
 if [ $STANDALONE -eq 1 ]; then
   echo "Opening file [$2]"
